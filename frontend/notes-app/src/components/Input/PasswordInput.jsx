@@ -2,7 +2,7 @@
 // Importando a biblioteca React para criar o componente PasswordInput
 import React from 'react';
 // Importando o ícone FaRegEye da biblioteca react-icons
-import { FaRegEye } from 'react-icons/fa';
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
 // PasswordInput é um componente funcional que retorna um campo de entrada do tipo password
 // Ele recebe três props: value, onChange e placeholder
@@ -29,13 +29,19 @@ const PasswordInput = ({ value, onChange, placeholder }) => {
             type={isShowPassword ? 'text' : 'password'}
             placeholder={placeholder || 'Password'}
             className='w-full text-sm bg-transparent py-3 mr-3 rounded outline-none'
+            style={{'::-ms-reveal': {display: 'none'}, '::-webkit-reveal': {display: 'none'}}}
             />
 
-            <FaRegEye
+            {isShowPassword ? <FaRegEye
+                size={22}
+                className='text-primary-200 cursor-pointer'
+                onClick={() => toggleShowPassword()}
+            /> : <FaRegEyeSlash
                 size={22}
                 className='text-primary-200 cursor-pointer'
                 onClick={() => toggleShowPassword()}
             />
+            }
         </div>
     );
 };
