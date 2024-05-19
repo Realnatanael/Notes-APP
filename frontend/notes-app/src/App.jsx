@@ -2,7 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home/Home';
-import Login from './pages/Login/Login';
+import Login from './pages/Login/Login'
 import SignUp from './pages/SignUp/SingUp';
 
 // Definindo as rotas da aplicação utilizando o componente Route do react-router-dom

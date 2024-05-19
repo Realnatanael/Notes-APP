@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "postcss-import": "^16.1.0",
+    "postcss-nesting": "^12.1.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.1"
