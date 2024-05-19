@@ -2,8 +2,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home/Home';
-import Login from './pages/Login/Login'
 import SignUp from './pages/SignUp/SingUp';
+import Login from './pages/Login/Login';
 
 // Definindo as rotas da aplicação utilizando o componente Route do react-router-dom
 // Cada rota é associada a um componente específico que será renderizado quando a rota for acessada

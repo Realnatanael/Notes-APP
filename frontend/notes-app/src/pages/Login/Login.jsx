@@ -3,6 +3,7 @@ import React, {useState} from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import { Link } from 'react-router-dom';
 import PasswordInput from '../../components/Input/PasswordInput';
+import { validateEmail } from '../../utils/helper';
 // Abaixo é um componente funcional que retorna um h1 com o texto Login
 const Login = () => {
     // email é um estado que armazena o email digitado pelo usuário
@@ -14,34 +15,19 @@ const Login = () => {
     // handleLogin é uma função que é chamada quando o formulário é submetido
     const handleLogin = async (e) => {
         e.preventDefault();
-        // Se o email ou a senha estiverem vazios, exibe uma mensagem de erro
-        if (!email || !password) {
-            setError('Email e senha são obrigatórios');
+        // Verifica se o email é válido através da função validateEmail
+        if (!validateEmail(email)) {
+            setError('Coloque um email válido!');
             return;
         }
-        // Se não houver erro, limpa a mensagem de erro
-        setError(null);
-        // Cria um objeto com o email e a senha
-        const user = {email, password};
-        // Envia o objeto para a API
-        const response = await fetch('http://localhost:5000/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user)
-        });
-        // Converte a resposta em JSON
-        const data = await response.json();
-        // Se a resposta contiver um token, armazena o token no localStorage
-        if (data.token) {
-            localStorage.setItem('token', data.token);
-            // Redireciona o usuário para a página de dashboard
-            window.location.href = '/dashboard';
-        } else {
-            // Se a resposta não contiver um token, exibe uma mensagem de erro
-            setError(data.message);
+
+        // Verifica se a senha é válida e tem mais de 6 caracteres
+        if (password.length < 6) {
+            setError('A senha deve ter pelo menos 6 caracteres');
+            return;
         }
+        // Se o email e a senha forem válidos, o estado de erro é limpo
+        setError("")
     };
     // O componente retorna um formulário com campos de entrada para email e senha
     return (
@@ -64,6 +50,8 @@ const Login = () => {
                         <PasswordInput value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         />
+
+                        {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
 
                         <button type='submit' className='btn-primary'>Login</button>
 
