@@ -1,4 +1,4 @@
-# Projeto MERN usando tailwind de tasks e notas 
+# Projeto MERN de tasks e notas usando tailwind
 Esse projeto não é de minha autoria, estou desenvolvendo ele através de tutorial no youtube 
 Segue o link do tutorial:
 
