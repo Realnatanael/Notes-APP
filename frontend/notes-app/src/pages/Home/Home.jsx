@@ -1,11 +1,14 @@
 // Este arquivo é onde a page Home é definido.
 import React from 'react';
-// Abaixo é um componente funcional que retorna um h1 com o texto Home
+import Navbar from '../../components/Navbar/Navbar';
+// Abaixo é um componente funcional 
 const Home = () => {
     return (
-        <div>
-        <h1>Home</h1>
-        </div>
+        <>
+            <Navbar />
+
+            
+        </>
     );
 };
 // Exporta o componente Home
