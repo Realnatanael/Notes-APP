@@ -3,3 +3,8 @@ Esse projeto não é de minha autoria, estou desenvolvendo ele através de tutor
 Segue o link do tutorial:
 
 [Link do tutorial](https://www.youtube.com/embed/Rgvec9UA2_I?si=fJuRezvka3F-1om7)
+
+EXPRESS
+REACT
+NODEJS
+MONGO DB

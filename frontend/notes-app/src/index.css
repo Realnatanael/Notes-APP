@@ -30,6 +30,10 @@
   .icon-btn{
     @apply text-xl text-slate-400 cursor-pointer hover:text-primary-300;
   }
+
+  .input-label {
+    @apply text-xs text-slate-400;
+  }
 }
 
 input::-ms-reveal,
