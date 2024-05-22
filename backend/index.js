@@ -66,6 +66,36 @@ app.post("/create-account", async (req, res) => {
         message: "Account created successfully",
     });
 });
+//Aqui eu defino a rota de login, que é a rota que o usuário vai acessar para fazer login
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: "Missing required information" });
+    }
+
+    const userInfo = await User.findOne({ email: email });
+    //Aqui eu verifico se o usuário existe, se não existir eu retorno uma mensagem de erro
+    if (!userInfo) {
+        return res.json({
+            error: true,
+            message: "User does not exist",
+        });
+    }
+    //Aqui eu verifico se o email e a senha que o usuário digitou são iguais ao email e senha do usuário que está no banco de dados
+    if (userInfo.email === email && userInfo.password === password) {
+        const user = { user: userInfo };
+        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+            expiresIn: "36000m",
+        });
+
+        return res.json({
+            error: false,
+            user: userInfo,
+            accessToken,
+            message: "Login successful",
+        });
+    }                   
 
 //Aqui eu defino s porta que o servidor vai rodar, listen é uma função do express que recebe a porta e inicia o servidor
 app.listen(8000);
