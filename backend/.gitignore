@@ -1,1 +1,7 @@
+# modules
 node_modules
+
+# arquivo de configuração .env e config.json
+.env
+config.json
+
