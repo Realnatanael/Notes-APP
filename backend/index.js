@@ -95,7 +95,13 @@ app.post("/login", async (req, res) => {
             accessToken,
             message: "Login successful",
         });
-    }                   
+    } else {
+        return res.status(400).json({
+            error: true,
+            message: "Invalid email or password",
+        });
+    } 
+});               
 
 //Aqui eu defino s porta que o servidor vai rodar, listen é uma função do express que recebe a porta e inicia o servidor
 app.listen(8000);
