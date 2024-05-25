@@ -103,7 +103,7 @@ app.post("/login", async (req, res) => {
         });
     } 
 });  
-
+// Aqui eu defino a rota de adicionar nota, que é a rota que o usuário vai acessar para adicionar uma nota
 app.post("/add-note", authenticateToken, async (req, res) => {
     const { title, content, tags} = req.body;
     const { user } = req.user;
@@ -132,6 +132,48 @@ app.post("/add-note", authenticateToken, async (req, res) => {
     return res.status(500).json({ error: error.message });
     }
 });
+//Aqui eu defino a rota de editar nota, que é a rota que o usuário vai acessar para editar uma nota
+app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
+    const noteId = req.params.noteId;
+    const { title, content, tags, isPinned } = req.body;
+    const { user } = req.user;
+
+    if (!title && !content && !tags){
+        return res.status(400).json({ error: "Missing required information" });
+    }
+
+    try {
+        const note = await Note.findOne({ _id: noteId, userId: user._id });
+
+        if (!note) {
+            return res.status(404).json({ error: "Note not found" });
+        }
+
+        if (title) {
+            note.title = title;
+        }
+        if (content) {
+            note.content = content;
+        }
+        if (tags) {
+            note.tags = tags;
+        }
+        if (isPinned !== undefined) {
+            note.isPinned = isPinned;
+        }
+
+        await note.save();
+        return res.json({
+            error: false,
+            note,
+            message: "Note edited successfully",
+        });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+        
+    }
+})
+
 
 //Aqui eu defino s porta que o servidor vai rodar, listen é uma função do express que recebe a porta e inicia o servidor
 app.listen(8000);
