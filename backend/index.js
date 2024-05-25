@@ -191,8 +191,8 @@ app.get("/get-all-notes", authenticateToken, async (req, res) => {
 });
 //Aqui eu defino a rota de excluir nota, que é a rota que o usuário vai acessar para excluir uma nota
 app.delete("/delete-note/:noteId", authenticateToken, async (req, res) => {
-    const noteId = req.params.noteId;
-    const { user } = req.user;
+    const noteId = req.params.noteId; //Aqui eu pego o id da nota que o usuário quer excluir
+    const { user } = req.user; // Eu uso {user} ao invés de user porque eu estou desestruturando o objeto que está na requisição, ou seja, eu estou pegando o user que está na requisição e passando para a variável user, desestruturar é pegar um objeto e pegar apenas uma parte dele, no caso eu estou pegando o user que está na requisição
 
     try {
         const note = await Note.findOne({ _id: noteId, userId: user._id });
@@ -211,7 +211,32 @@ app.delete("/delete-note/:noteId", authenticateToken, async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 });
+//Aqui eu defino a rota de dar Update em isPinned, que é a rota que o usuário vai acessar para dar update no campo isPinned de uma nota
+app.put("/update-note-pinned/:noteId", authenticateToken, async (req, res) => {
+    const noteId = req.params.noteId; //Aqui eu pego o id da nota que o usuário quer dar update no campo isPinned
+    const { isPinned } = req.body; //Aqui eu pego o valor que o usuário quer colocar no campo isPinned
+    const { user } = req.user; //Aqui eu pego o usuário que está na requisição e passo para a variável user
 
+    try {
+    const note = await Note.findOne({ _id: noteId, userId: user._id });
+
+    if (!note) { 
+        return res.status(404).json({ error: "Note not found" });
+    }
+
+   note.isPinned = isPinned || false;
+
+    await note.save();
+
+    return res.json({
+        error: false,
+        note,
+        message: "Note updated successfully",
+    });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
 
 //Aqui eu defino s porta que o servidor vai rodar, listen é uma função do express que recebe a porta e inicia o servidor
 app.listen(8000);
