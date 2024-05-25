@@ -173,6 +173,44 @@ app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
         
     }
 })
+//Aqui eu defino a rota de exibir notas, que é a rota que o usuário vai acessar para ver as notas
+app.get("/get-all-notes", authenticateToken, async (req, res) => {
+    const { user } = req.user; //Aqui eu pego o usuário que está na requisição e passo para a variável user
+
+    try {
+        const notes = await Note.find({ userId: user._id }).sort({ isPinned: -1}); //Aqui eu busco todas as notas que tem o userId igual ao id do usuário que está na requisição, ou seja, eu busco todas as notas do usuário que está logado, userId é o id do usuário que criou a nota e user._id é o id do usuário que está logado, isPinned: -1 é para ordenar as notas de acordo com o campo isPinned, se isPinned for true, a nota vai aparecer primeiro, se for false, a nota vai aparecer depois
+
+        return res.json({
+            error: false,
+            notes,
+            message: "Notes retrieved successfully",
+        });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+//Aqui eu defino a rota de excluir nota, que é a rota que o usuário vai acessar para excluir uma nota
+app.delete("/delete-note/:noteId", authenticateToken, async (req, res) => {
+    const noteId = req.params.noteId;
+    const { user } = req.user;
+
+    try {
+        const note = await Note.findOne({ _id: noteId, userId: user._id });
+
+        if (!note) {
+            return res.status(404).json({ error: "Note not found" });
+        }
+
+        await Note.deleteOne({ _id: noteId, userId: user._id }) // Aqui eu deleto a nota que tem o id igual ao noteId e o userId igual ao id do usuário que está logado, o Note.deleteOne é um método do mongoose que deleta um documento do banco de dados
+
+        return res.json({
+            error: false,
+            message: "Note deleted successfully",
+        });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
 
 
 //Aqui eu defino s porta que o servidor vai rodar, listen é uma função do express que recebe a porta e inicia o servidor
