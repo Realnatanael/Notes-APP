@@ -103,6 +103,21 @@ app.post("/login", async (req, res) => {
         });
     } 
 });  
+// Aqui eu defino a rota de exibir o usuário, que é a rota que o usuário vai acessar para ver o usuário que está logado
+app.get("/get-user", authenticateToken, async (req, res) => {
+   const {user} = req.user;
+
+   const isUser = await User.findOne({_id: user._id});
+
+   if (!isUser){
+         return res.status(404).json({ error: "User not found" });
+   }
+
+    return res.json({
+        user: {fullName: isUser.fullName, email: isUser.email, _id: isUser._id, createdOn: isUser.createdOn},
+        message: "User retrieved successfully",
+    });
+});
 // Aqui eu defino a rota de adicionar nota, que é a rota que o usuário vai acessar para adicionar uma nota
 app.post("/add-note", authenticateToken, async (req, res) => {
     const { title, content, tags} = req.body;
@@ -237,6 +252,7 @@ app.put("/update-note-pinned/:noteId", authenticateToken, async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 });
+
 
 //Aqui eu defino s porta que o servidor vai rodar, listen é uma função do express que recebe a porta e inicia o servidor
 app.listen(8000);
