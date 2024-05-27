@@ -24,6 +24,15 @@ const Home = () => {
 
     const navigate = useNavigate();
 
+    // Define a função handleEdit que recebe noteDetails como parâmetro e chama setOpenAddEditModal com o objeto {isShow: true, data: noteDetails, type: 'edit'}
+    const handleEdit = (noteDetails) => {
+        setOpenAddEditModal({
+            isShow: true,
+            data: noteDetails,
+            type: 'edit',
+        });
+    }
+
     // get user info
     const getUserInfo = async () => {
         try {
@@ -74,7 +83,7 @@ const Home = () => {
                             content={item.content}
                             tags={item.tags}
                             isPinned={item.isPinned}
-                            onEdit={() => console.log('Edit Note')}
+                            onEdit={() => handleEdit(item)}// Define a função onEdit que chama a função handleEdit com o parâmetro item
                             onDelete={() => console.log('Delete Note')}
                             onPinNote={() => console.log('Pin Note')}
                         />
@@ -114,6 +123,7 @@ const Home = () => {
                         data: null,
                     });
                 }}
+                getAllNotes={getAllNotes}
                 />
             </Modal>
         </>
