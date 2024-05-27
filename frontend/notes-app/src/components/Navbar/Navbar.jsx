@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 import ProfileInfo from '../Cards/ProfileInfo';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../SearchBar/SearchBar';
+
 // Abaixo é um componente funcional que retorna um h1 com o texto Navbar
-const Navbar = () => {
+const Navbar = ({userInfo}) => {
     const [searchQuery, setSearchQuery] = useState('');
 
-    const navigate = useNavigate;
+    const navigate = useNavigate();
     const onLogout = () => {
+        localStorage.clear();
         navigate('/login');
     };
 
@@ -29,7 +31,7 @@ const Navbar = () => {
             onClearSearch={onClearSearch}
             />
 
-            <ProfileInfo onLogout={onLogout} />
+            {userInfo && Object.keys(userInfo).length > 0 && <ProfileInfo userInfo={userInfo} onLogout={onLogout} />}
         </div>
     );
 };
