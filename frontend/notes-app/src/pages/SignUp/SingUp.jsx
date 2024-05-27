@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import PasswordInput from '../../components/Input/PasswordInput';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { validateEmail } from '../../utils/helper';
+import axiosInstance from '../../utils/axiosInstance';
 // Abaixo é um componente funcional que retorna um h1 com o texto SignUp
 const SignUp = () => {
     // name é um estado que armazena o nome digitado pelo usuário
@@ -14,8 +15,10 @@ const SignUp = () => {
     const [password, setPassword] = useState('');
     // error é um estado que armazena uma mensagem de erro, caso ocorra
     const [error, setError] = useState(null);
+
+    const navigate = useNavigate();
     // handleSignUp é uma função que é chamada quando o formulário é submetido 
-    const handleSignUp = (e) => { // e é o evento que ocorre quando o formulário é submetido 
+    const handleSignUp = async (e) => { // e é o evento que ocorre quando o formulário é submetido 
         e.preventDefault(); // previne o comportamento padrão do formulário de ser submetido
         // Verifica se o nome tem menos de 3 caracteres se sim exibe uma mensagem de erro
         if (name.length < 3) { 
@@ -34,6 +37,32 @@ const SignUp = () => {
         }
         // Se o nome, email e senha forem válidos, o estado de erro é limpo
         setError("");
+
+        // Chamar a API para criar um novo usuário
+        try{
+            const response = await axiosInstance.post("/create-account", {
+                fullName: name,
+                email,
+                password,
+            });
+
+            // Se a resposta da API tiver um erro, exibe a mensagem de erro
+            if (response.data && response.data.error) {
+                setError(response.data.message);
+                return;
+            }
+            // Se a resposta da API tiver um token de acesso, armazena o token no localStorage e redireciona para a página de dashboard
+            if (response.data && response.data.accessToken) {
+                localStorage.setItem("token", response.data.accessToken);
+                navigate("/dashboard")
+            }
+        } catch (error) {
+            if (error.response && error.response.data && error.response.data.message){
+                setError(error.response.data.message);
+            } else {
+                setError("Algo deu errado. Tente novamente mais tarde.");
+            }
+        }
     };
     // O componente retorna um formulário com campos de entrada para nome, email e senha
     return (
