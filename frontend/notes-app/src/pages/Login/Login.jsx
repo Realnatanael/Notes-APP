@@ -4,7 +4,7 @@ import Navbar from '../../components/Navbar/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from '../../components/Input/PasswordInput';
 import { validateEmail } from '../../utils/helper';
-import axiosInstance from '../../utils/axiosinstance';
+import axiosInstance from '../../utils/axiosInstance.js';
 // Abaixo é um componente funcional que retorna um h1 com o texto Login
 const Login = () => {
     // email é um estado que armazena o email digitado pelo usuário
