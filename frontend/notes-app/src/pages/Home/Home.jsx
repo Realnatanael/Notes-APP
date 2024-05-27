@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import NoteCard from '../../components/Cards/NoteCard';
 import { MdAdd } from 'react-icons/md';
+import moment from 'moment';
 import AddEditNotes from './AddEditNotes';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
@@ -18,6 +19,7 @@ const Home = () => {
         data: null,
     });
 
+    const [allNotes, setAllNotes] = useState([]); // Define o estado allNotes com o método setAllNotes
     const [userInfo, setUserInfo] = useState({}); // Define o estado userInfo com o método setUserInfo
 
     const navigate = useNavigate();
@@ -37,7 +39,21 @@ const Home = () => {
         }
     }
 
+    // get todas as notas
+    const getAllNotes = async () => {
+        try {
+            const response = await axiosInstance.get("/get-all-notes");
+
+            if (response.data && response.data.notes){
+                setAllNotes(response.data.notes);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     useEffect(() => {
+        getAllNotes();
         getUserInfo();
         return () => {
             
@@ -50,16 +66,19 @@ const Home = () => {
 
             <div className='container mx-auto'>
                 <div className='grid grid-cols-3 gap-4 mt-8 ml-5'>
-                    <NoteCard 
-                        title='Note Title'
-                        date='2021-12-12'
-                        content='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut mauris ut libero.'
-                        tags="#tag1 #tag2 #tag3"
-                        isPinned={true}
-                        onEdit={() => console.log('Edit Note')}
-                        onDelete={() => console.log('Delete Note')}
-                        onPinNote={() => console.log('Pin Note')}
-                    />
+                    {allNotes.map((item, index)=> (
+                        <NoteCard 
+                            key={item._id}
+                            title={item.title}
+                            date={item.createdOn}
+                            content={item.content}
+                            tags={item.tags}
+                            isPinned={item.isPinned}
+                            onEdit={() => console.log('Edit Note')}
+                            onDelete={() => console.log('Delete Note')}
+                            onPinNote={() => console.log('Pin Note')}
+                        />
+                    ))}
                 </div>
             </div>
 
