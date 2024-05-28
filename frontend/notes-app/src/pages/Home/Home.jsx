@@ -8,16 +8,23 @@ import AddEditNotes from './AddEditNotes';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import axiosInstance from '../../utils/axiosInstance';
+import Toast from '../../components/ToastMessage/Toast';
 // Abaixo é um componente funcional 
 const Home = () => {
     // Define o estado openAddEditModal com o método setOpenAddEditModal
-    const [openAddEditModal, setOpenAddEditModal] = useState({ 
+    const [openAddEditModal, setOpenAddEditModal] = useState({
         // useState é um hook que permite adicionar o estado do React a um componente funcional ele retorna um array com dois elementos: a variável de estado e a função que atualiza essa variável
         // Um hook é uma função especial que permite que você use recursos do React. Por exemplo, o useState é um hook que permite adicionar o estado do React a um componente funcional.
         isShow: false,
         type: 'add',
         data: null,
     });
+
+    const [showToastMsg, setShowToastMsg] = useState({
+        isShow: false,
+        message: '',
+        type: "add",
+    })
 
     const [allNotes, setAllNotes] = useState([]); // Define o estado allNotes com o método setAllNotes
     const [userInfo, setUserInfo] = useState({}); // Define o estado userInfo com o método setUserInfo
@@ -33,15 +40,30 @@ const Home = () => {
         });
     }
 
+    const showToastMessage = (message, type) => {
+        setShowToastMsg({
+            isShow: true,
+            message,
+            type,
+        });
+    }
+
+    const handleCloseToast = () => {
+        setShowToastMsg({
+            isShow: false,
+            message: '',
+        });
+    }
+
     // get user info
     const getUserInfo = async () => {
         try {
             const response = await axiosInstance.get("/get-user");
-            if (response.data && response.data.user){
+            if (response.data && response.data.user) {
                 setUserInfo(response.data.user);
             }
         } catch (error) {
-            if (error.response.status === 401){
+            if (error.response.status === 401) {
                 localStorage.clear();
                 navigate('/login');
             }
@@ -53,7 +75,7 @@ const Home = () => {
         try {
             const response = await axiosInstance.get("/get-all-notes");
 
-            if (response.data && response.data.notes){
+            if (response.data && response.data.notes) {
                 setAllNotes(response.data.notes);
             }
         } catch (error) {
@@ -65,7 +87,7 @@ const Home = () => {
         getAllNotes();
         getUserInfo();
         return () => {
-            
+
         }
     }, []);
 
@@ -75,8 +97,8 @@ const Home = () => {
 
             <div className='container mx-auto'>
                 <div className='grid grid-cols-3 gap-4 mt-8 ml-5'>
-                    {allNotes.map((item, index)=> (
-                        <NoteCard 
+                    {allNotes.map((item, index) => (
+                        <NoteCard
                             key={item._id}
                             title={item.title}
                             date={item.createdOn}
@@ -91,20 +113,20 @@ const Home = () => {
                 </div>
             </div>
 
-            <button className='w-16 h-16 flex items-center justify-center rounded-2xl bg-primary-200 hover:bg-primary-300 absolute right-10 bottom-10' 
-            onClick={() => {
-                setOpenAddEditModal({
-                    isShow: true,
-                    type: 'add',
-                    data: null,
-                });
-            }}>
-                <MdAdd className='text-[32px] text-white'/>
+            <button className='w-16 h-16 flex items-center justify-center rounded-2xl bg-primary-200 hover:bg-primary-300 absolute right-10 bottom-10'
+                onClick={() => {
+                    setOpenAddEditModal({
+                        isShow: true,
+                        type: 'add',
+                        data: null,
+                    });
+                }}>
+                <MdAdd className='text-[32px] text-white' />
             </button>
-            
+
             <Modal
                 isOpen={openAddEditModal.isShow}
-                onRequestClose={() => {}}
+                onRequestClose={() => { }}
                 style={{
                     overlay: {
                         backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -114,18 +136,26 @@ const Home = () => {
                 className="w-[40%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-scroll"
             >
                 <AddEditNotes
-                type={openAddEditModal.type}
-                noteData={openAddEditModal.data}
-                onClose={() => {
-                    setOpenAddEditModal({
-                        isShow: false,
-                        type: 'add',
-                        data: null,
-                    });
-                }}
-                getAllNotes={getAllNotes}
+                    type={openAddEditModal.type}
+                    noteData={openAddEditModal.data}
+                    onClose={() => {
+                        setOpenAddEditModal({
+                            isShow: false,
+                            type: 'add',
+                            data: null,
+                        });
+                    }}
+                    getAllNotes={getAllNotes}
+                    showToastMessage={showToastMessage}
                 />
             </Modal>
+
+            <Toast
+                isShow={showToastMsg.isShow}
+                message={showToastMsg.message}
+                type={showToastMsg.type}
+                onClose={handleCloseToast}
+            />
         </>
     );
     // Retorna o JSX com o Navbar, NoteCard e o botão de adicionar nota com o Modal
