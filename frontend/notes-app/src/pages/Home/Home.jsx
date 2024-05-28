@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import axiosInstance from '../../utils/axiosInstance';
 import Toast from '../../components/ToastMessage/Toast';
+import EmptyCard from '../../components/EmptyCard/EmptyCard';
+
 // Abaixo é um componente funcional 
 const Home = () => {
     // Define o estado openAddEditModal com o método setOpenAddEditModal
@@ -28,6 +30,8 @@ const Home = () => {
 
     const [allNotes, setAllNotes] = useState([]); // Define o estado allNotes com o método setAllNotes
     const [userInfo, setUserInfo] = useState({}); // Define o estado userInfo com o método setUserInfo
+
+    const [isSearch, setIsSearch] = useState(false); // Define o estado isSearch com o método setIsSearch
 
     const navigate = useNavigate();
 
@@ -103,6 +107,43 @@ const Home = () => {
             }
         }
     }
+
+    // Pesquisar notas
+    const onSearchNote = async (query) => {
+        try {
+            const response = await axiosInstance.get("/search-notes/", {
+                params: {query},
+            });
+
+            if (response.data && response.data.notes) {
+                setIsSearch(true);
+                setAllNotes(response.data.notes);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const updateIsPinned = async (noteData) => {
+        const noteId = noteData._id;
+        try {
+            const response = await axiosInstance.put("/update-note-pinned/" + noteId, {
+                isPinned: !noteData.isPinned,
+            });
+
+            if (response.data && response.data.note) {
+                showToastMessage("Nota fixada com sucesso", 'pinned');
+                getAllNotes();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleClearSearch = async () => {
+        setIsSearch(false);
+        getAllNotes();
+    }
         
 
     useEffect(() => {
@@ -115,10 +156,10 @@ const Home = () => {
 
     return (
         <>
-            <Navbar userInfo={userInfo} />
+            <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch}/>
 
             <div className='container mx-auto'>
-                <div className='grid grid-cols-3 gap-4 mt-8 ml-5'>
+                {allNotes.length > 0 ? <div className='grid grid-cols-3 gap-4 mt-8 ml-5'>
                     {allNotes.map((item, index) => (
                         <NoteCard
                             key={item._id}
@@ -129,10 +170,12 @@ const Home = () => {
                             isPinned={item.isPinned}
                             onEdit={() => handleEdit(item)}// Define a função onEdit que chama a função handleEdit com o parâmetro item
                             onDelete={() => deleteNote(item)}
-                            onPinNote={() => console.log('Pin Note')}
+                            onPinNote={() => updateIsPinned(item)}
                         />
                     ))}
-                </div>
+                </div> : <EmptyCard
+                    className='mt-8 ml-5'
+                />}
             </div>
 
             <button className='w-16 h-16 flex items-center justify-center rounded-2xl bg-primary-200 hover:bg-primary-300 absolute right-10 bottom-10'

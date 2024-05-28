@@ -252,6 +252,34 @@ app.put("/update-note-pinned/:noteId", authenticateToken, async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 });
+//Aqui eu defino a rota de pesquisar notas, que é a rota que o usuário vai acessar para pesquisar notas
+app.get("/search-notes", authenticateToken, async (req, res) => {
+    const { user } = req.user; //Aqui eu pego o usuário que está na requisição e passo para a variável user
+    const { query } = req.query; //Aqui eu pego a query que o usuário digitou na barra de pesquisa
+
+    if (!query) {
+        return res.status(400).json({ error: "Missing required information" });
+    }
+
+    try {
+        const matchingNotes = await Note.find({
+            userId: user._id,
+            $or: [
+                { title: { $regex: new RegExp(query, "i") } },
+                { content: { $regex: new RegExp(query, "i") } },
+            ],
+        });
+
+        return res.json({
+            error: false,
+            notes: matchingNotes,
+            message: "Notes retrieved successfully",
+        });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+);
 
 
 //Aqui eu defino s porta que o servidor vai rodar, listen é uma função do express que recebe a porta e inicia o servidor
